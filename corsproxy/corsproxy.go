@@ -41,7 +41,6 @@ func (p *corsProxyStruct) Serve() {
 		// Fetch API sends an OPTIONS call that may not be supported
 		if r.Method == "OPTIONS" {
 			log.Printf("Intercepting OPTIONS on %v", r.URL)
-			w.Header().Set("Allow", "OPTIONS, GET, POST, PATCH, DELETE")
 			w.WriteHeader(http.StatusNoContent)
 		} else {
 			log.Printf("Request %v %v", r.Method, r.URL)
