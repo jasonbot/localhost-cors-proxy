@@ -28,7 +28,7 @@ func (p *corsProxyStruct) Serve() {
 		}
 		log.Println(allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-		w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
+		w.Header().Set("Access-Control-Allow-Headers", "authorization, origin, x-requested-with")
 
 		// Fetch API sends an OPTIONS call that may not be supported
 		if r.Method == "OPTIONS" {
