@@ -9,8 +9,9 @@ import (
 )
 
 type corsProxyStruct struct {
-	reverseproxy            *httputil.ReverseProxy
-	listenport, forwardport int
+	reverseproxy *httputil.ReverseProxy
+	listenport   int
+	forwardurl   string
 }
 
 // CorsProxy is the entry point to the HTTP proxy
@@ -19,12 +20,12 @@ type CorsProxy interface {
 }
 
 func (p *corsProxyStruct) Serve() {
-	log.Printf("Listening on port %v; forwarding to port %v\n", p.listenport, p.forwardport)
+	log.Printf("Listening on port %v; forwarding port %v\n", p.listenport, p.forwardurl)
 
 	corsCombiner := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		allowedOrigin := r.Header.Get("Origin")
 		if allowedOrigin == "" {
-			allowedOrigin = fmt.Sprintf("http://%v", r.Host)
+			allowedOrigin = fmt.Sprintf("%v://%v", r.URL.Scheme, r.Host)
 		}
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Headers", "authorization, origin, x-requested-with")
@@ -41,16 +42,26 @@ func (p *corsProxyStruct) Serve() {
 		}
 	})
 
-	http.ListenAndServe(fmt.Sprintf(":%v", p.listenport), corsCombiner)
+	err := http.ListenAndServe(fmt.Sprintf("127.0.0.1:%v", p.listenport), corsCombiner)
+	if err != nil {
+		log.Fatalf("Error serving: %v", err)
+	}
 }
 
 // NewProxy returns a new HTTP proxy
-func NewProxy(listenport, forwardport int) CorsProxy {
-	proxyURL, _ := url.Parse(fmt.Sprintf("http://127.0.0.1:%v/", forwardport))
+func NewProxy(listenport int, forwardurl string) (CorsProxy, error) {
+	proxyURL, err := url.Parse(forwardurl)
+
+	if err != nil {
+		log.Fatalf("Can't parse url %v: %v", forwardurl, err)
+		return nil, err
+	}
+
 	proxy := httputil.NewSingleHostReverseProxy(proxyURL)
+
 	return &corsProxyStruct{
 		reverseproxy: proxy,
 		listenport:   listenport,
-		forwardport:  forwardport,
-	}
+		forwardurl:   forwardurl,
+	}, nil
 }

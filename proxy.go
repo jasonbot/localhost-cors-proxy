@@ -7,12 +7,15 @@ import (
 )
 
 func main() {
-	var listenport, forwardport int
+	var listenport int
+	var forwardurl string
 
 	flag.IntVar(&listenport, "listenport", 1234, "the port to bind to (bound to 0.0.0.0)")
-	flag.IntVar(&forwardport, "forwardport", 5000, "the port to forward to (bound to 127.0.0.1)")
+	flag.StringVar(&forwardurl, "forwardurl", "http://localhost:5000", "the url to forward to")
 	flag.Parse()
 
-	proxy := corsproxy.NewProxy(listenport, forwardport)
-	proxy.Serve()
+	proxy, err := corsproxy.NewProxy(listenport, forwardurl)
+	if err == nil {
+		proxy.Serve()
+	}
 }
