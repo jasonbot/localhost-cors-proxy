@@ -22,7 +22,10 @@ func (p *corsProxyStruct) Serve() {
 	log.Printf("Listening on port %v; forwarding to port %v\n", p.listenport, p.forwardport)
 
 	corsCombiner := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		allowedOrigin := fmt.Sprintf("http://%v", r.Host)
+		allowedOrigin := r.Header.Get("Origin")
+		if allowedOrigin == "" {
+			allowedOrigin = fmt.Sprintf("http://%v", r.Host)
+		}
 		log.Println(allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
