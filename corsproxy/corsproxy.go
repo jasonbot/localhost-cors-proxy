@@ -29,7 +29,8 @@ func (p *corsProxyStruct) Serve() {
 		// Fetch API sends an OPTIONS call that may not be supported
 		if r.Method == "OPTIONS" {
 			w.WriteHeader(http.StatusNoContent)
-			w.Header().Set("Allow", "OPTIONS, GET, HEAD, POST")
+			w.Header().Set("Allow", "OPTIONS, GET, POST")
+			w.Write([]byte{})
 		} else {
 			p.reverseproxy.ServeHTTP(w, r)
 		}
