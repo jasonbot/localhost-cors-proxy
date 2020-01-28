@@ -31,7 +31,7 @@ func (p *corsProxyStruct) Serve() {
 		headers := map[string]string{
 			"Access-Control-Allow-Origin":  allowedOrigin,
 			"Access-Control-Allow-Headers": "authorization, origin, x-requested-with",
-			"Access-Control-Allow-Methods": "OPTIONS, GET, POST, PATCH, DELETE",
+			"Access-Control-Allow-Methods": "OPTIONS, GET, POST, PUT, PATCH, DELETE",
 		}
 
 		for header, headerContent := range headers {
