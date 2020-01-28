@@ -25,7 +25,14 @@ func (p *corsProxyStruct) Serve() {
 		log.Printf("Request %v %v", r.Method, r.URL)
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
-		p.reverseproxy.ServeHTTP(w, r)
+
+		// Fetch API sends an OPTIONS call that may not be supported
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusNoContent)
+			w.Header().Set("Allow", "OPTIONS, GET, HEAD, POST")
+		} else {
+			p.reverseproxy.ServeHTTP(w, r)
+		}
 	})
 
 	http.ListenAndServe(fmt.Sprintf(":%v", p.listenport), corsCombiner)
