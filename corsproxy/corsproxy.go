@@ -28,12 +28,12 @@ func (p *corsProxyStruct) Serve() {
 		}
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Headers", "authorization, origin, x-requested-with")
+		w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
 
 		// Fetch API sends an OPTIONS call that may not be supported
 		if r.Method == "OPTIONS" {
 			log.Printf("Intercepting OPTIONS on %v", r.URL)
 			w.Header().Set("Allow", "OPTIONS, GET, POST, PATCH, DELETE")
-			w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
 			w.WriteHeader(http.StatusNoContent)
 		} else {
 			log.Printf("Request %v %v", r.Method, r.URL)
