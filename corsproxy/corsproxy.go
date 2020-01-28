@@ -27,9 +27,16 @@ func (p *corsProxyStruct) Serve() {
 		if allowedOrigin == "" {
 			allowedOrigin = fmt.Sprintf("%v://%v", r.URL.Scheme, r.Host)
 		}
-		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
-		w.Header().Set("Access-Control-Allow-Headers", "authorization, origin, x-requested-with")
-		w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
+
+		headers := map[string]string{
+			"Access-Control-Allow-Origin":  allowedOrigin,
+			"Access-Control-Allow-Headers": "authorization, origin, x-requested-with",
+			"Access-Control-Allow-Methods": "OPTIONS, GET, POST, PATCH, DELETE",
+		}
+
+		for header, headerContent := range headers {
+			w.Header().Set(header, headerContent)
+		}
 
 		// Fetch API sends an OPTIONS call that may not be supported
 		if r.Method == "OPTIONS" {
