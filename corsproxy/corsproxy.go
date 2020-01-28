@@ -33,6 +33,7 @@ func (p *corsProxyStruct) Serve() {
 		if r.Method == "OPTIONS" {
 			log.Printf("Intercepting OPTIONS on %v", r.URL)
 			w.Header().Set("Allow", "OPTIONS, GET, POST, PATCH, DELETE")
+			w.Header().Set("Access-Control-Allow-Methods", "OPTIONS, GET, POST, PATCH, DELETE")
 			w.WriteHeader(http.StatusNoContent)
 		} else {
 			log.Printf("Request %v %v", r.Method, r.URL)
