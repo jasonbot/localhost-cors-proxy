@@ -22,7 +22,8 @@ func (p *corsProxyStruct) Serve() {
 	log.Printf("Listening on port %v; forwarding to port %v\n", p.listenport, p.forwardport)
 
 	corsCombiner := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
+		allowedOrigin := fmt.Sprintf("http://%v", r.URL.Host)
+		w.Header().Set("Access-Control-Allow-Origin", allowedOrigin)
 		w.Header().Set("Access-Control-Allow-Headers", "X-Requested-With")
 
 		// Fetch API sends an OPTIONS call that may not be supported
